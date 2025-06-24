@@ -93,7 +93,7 @@ export default function SettingsPage() {
       
       setAppointments(formattedAppointments);
     } catch (error) {
-      setSnackbar({ open: true, message: `Error al cargar las citas`, severity: 'error' });
+      setSnackbar({ open: true, message: `Error al cargar las citas ${error}`, severity: 'error' });
     }
   }, []);
 
