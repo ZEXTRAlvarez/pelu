@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { deleteAppointment } from '@/app/services/appointments/deleteAppointment';
 import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 export async function GET(
   request: Request,
@@ -19,7 +20,7 @@ export async function GET(
         clientName: true,
         clientPhone: true,
         confirmed: true,
-      } as any
+      }
     });
 
     if (!appointment) {
@@ -61,7 +62,7 @@ export async function PATCH(
 
     const updatedAppointment = await prisma.appointment.update({
       where: { id: params.id },
-      data: { confirmed } as any,
+      data: { confirmed },
       select: {
         id: true,
         date: true,
@@ -70,7 +71,7 @@ export async function PATCH(
         clientName: true,
         clientPhone: true,
         confirmed: true,
-      } as any
+      }
     });
 
     return NextResponse.json(updatedAppointment);

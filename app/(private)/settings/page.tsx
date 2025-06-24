@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
@@ -72,6 +72,30 @@ export default function SettingsPage() {
     severity: 'success' | 'error';
   }>({ open: false, message: '', severity: 'success' });
 
+  const fetchAppointments = useCallback(async (date: Date) => {
+    try {
+      const formattedDate = format(date, 'yyyy-MM-dd');
+
+      const response = await fetch(`/api/appointments?date=${formattedDate}`);
+      
+      if (!response.ok) {
+        setSnackbar({ open: true, message: `Error al cargar las citas`, severity: 'error' });
+        return;
+      }
+
+      const data = await response.json();
+      
+      // Asegurarnos de que las fechas estén en el formato correcto
+      const formattedAppointments = data.map((appointment: Appointment) => ({
+        ...appointment,
+        date: format(new Date(appointment.date), 'yyyy-MM-dd')
+      }));
+      
+      setAppointments(formattedAppointments);
+    } catch (error) {
+      setSnackbar({ open: true, message: `Error al cargar las citas`, severity: 'error' });
+    }
+  }, []);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -112,31 +136,6 @@ export default function SettingsPage() {
     }
   };
 
-  const fetchAppointments = async (date: Date) => {
-    try {
-      const formattedDate = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd');
-
-      const response = await fetch(`/api/appointments?date=${formattedDate}`);
-      
-      if (!response.ok) {
-        setSnackbar({ open: true, message: `Error al cargar las citas`, severity: 'error' });
-      }
-
-      const data = await response.json();
-      
-      // Asegurarnos de que las fechas estén en el formato correcto
-      const formattedAppointments = data.map((appointment: Appointment) => ({
-        ...appointment,
-        date: format(new Date(appointment.date), 'yyyy-MM-dd')
-      }));
-      
-      setAppointments(formattedAppointments);
-    } catch (error) {
-      setSnackbar({ open: true, message: `Error al cargar las citas`, severity: 'error' });
-      setError('Error al cargar las citas');
-    }
-  };
-
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
     if (date) {
@@ -150,7 +149,7 @@ export default function SettingsPage() {
     if (selectedDate && session?.user?.email) {
       fetchAppointments(selectedDate);
     }
-  }, [selectedDate, session?.user?.email]);
+  }, [selectedDate, session?.user?.email, fetchAppointments]);
 
   const handleAddSchedule = async () => {
     if (!startTime || !endTime || !selectedDate) {
@@ -191,8 +190,8 @@ export default function SettingsPage() {
       });
 
       if (!response.ok) {
-        const data = await response.json();
         setSnackbar({ open: true, message: `Error al eliminar el horario`, severity: 'error' });
+        return;
       }
 
       setSchedules(prev => prev.filter(schedule => schedule.id !== id));

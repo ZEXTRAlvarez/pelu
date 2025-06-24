@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 export async function cleanupUnconfirmedAppointments() {
   try {
@@ -11,7 +12,7 @@ export async function cleanupUnconfirmedAppointments() {
         createdAt: {
           lt: twentyFourHoursAgo
         }
-      } as any
+      }
     });
 
     if (unconfirmedAppointments.length === 0) {
@@ -26,7 +27,7 @@ export async function cleanupUnconfirmedAppointments() {
         createdAt: {
           lt: twentyFourHoursAgo
         }
-      } as any
+      }
     });
 
     console.log(`Se eliminaron ${result.count} turnos no confirmados`);

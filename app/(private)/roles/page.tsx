@@ -22,7 +22,6 @@ import {
   Snackbar
 } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
-import { useSession } from 'next-auth/react';
 
 interface Role {
   id: string;
@@ -32,7 +31,6 @@ interface Role {
 }
 
 export default function RolesPage() {
-  const { data: session } = useSession();
   const [roles, setRoles] = useState<Role[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [newEmail, setNewEmail] = useState('');
