@@ -10,7 +10,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user }) {
       try {
         if (!user.email) {
           console.error('No email provided by Google');
@@ -40,7 +40,7 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
     },
-    async session({ session, token }) {
+    async session({ session }) {
       try {
         if (session.user?.email) {
           const dbUser = await prisma.user.findUnique({
