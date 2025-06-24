@@ -4,15 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "prisma generate --schema=./prisma/schema.production.prisma && next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate --schema=./prisma/schema.production.prisma",
     "prisma:seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
     "cleanup-appointments": "node scripts/cleanup-appointments.js",
     "check-env": "node scripts/check-env.js",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate deploy"
+    "db:push": "prisma db push --schema=./prisma/schema.production.prisma",
+    "db:migrate": "prisma migrate deploy --schema=./prisma/schema.production.prisma",
+    "db:generate": "prisma generate --schema=./prisma/schema.production.prisma"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
