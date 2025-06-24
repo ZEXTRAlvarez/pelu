@@ -131,7 +131,7 @@ export default function SettingsPage() {
         id: data.id,
         minAppointmentDuration: data.minAppointmentDuration || 15
       });
-    } catch (error) {
+    } catch {
       setSnackbar({ open: true, message: 'Error al cargar la configuración', severity: 'error' });
     }
   };
@@ -177,7 +177,7 @@ export default function SettingsPage() {
       setSchedules(prev => [...prev, newSchedule]);
       setStartTime('');
       setEndTime('');
-    } catch (error) {
+    } catch {
       setSnackbar({ open: true, message: `Error al agregar horario`, severity: 'error' });
       setError('Error al agregar horario');
     }
@@ -195,9 +195,9 @@ export default function SettingsPage() {
       }
 
       setSchedules(prev => prev.filter(schedule => schedule.id !== id));
-    } catch (error) {
+    } catch {
       setSnackbar({ open: true, message: `Error al eliminar el horario`, severity: 'error' });
-      setError(error instanceof Error ? error.message : 'Error al eliminar el horario');
+      setError('Error al eliminar el horario');
       setOpenDialog(true);
     }
   };
@@ -228,7 +228,7 @@ export default function SettingsPage() {
     setIsEditing(false); // Salimos del modo edición
     setSnackbar({ open: true, message: `Configuración actualizada con éxito`, severity: 'success' });
     setError('');
-  } catch (error) {
+  } catch {
     setSnackbar({ open: true, message: `Error al actualizar la configuración`, severity: 'error' });
     setError('Error al actualizar la configuración');
   }
@@ -243,9 +243,9 @@ export default function SettingsPage() {
       const data = await response.json();
       console.log('Horarios cargados:', data); // Para debugging
       setSchedules(data);
-    } catch (error) {
-      console.error('Error al cargar horarios:', error);
-      setError(error instanceof Error ? error.message : 'Error al cargar los horarios');
+    } catch {
+      console.error('Error al cargar horarios');
+      setError('Error al cargar los horarios');
       setOpenDialog(true);
     }
   };
