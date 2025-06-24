@@ -6,11 +6,12 @@ import prisma from '@/lib/prisma';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const appointment = await prisma.appointment.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: {
         id: true,
         date: true,
@@ -34,9 +35,10 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return new NextResponse('No autorizado', { status: 401 });
@@ -46,7 +48,7 @@ export async function PATCH(
     const { confirmed } = body;
 
     const appointment = await prisma.appointment.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { user: true }
     });
 
@@ -60,7 +62,7 @@ export async function PATCH(
     }
 
     const updatedAppointment = await prisma.appointment.update({
-      where: { id: params.id },
+      where: { id },
       data: { confirmed },
       select: {
         id: true,
@@ -81,15 +83,16 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return new NextResponse('No autorizado', { status: 401 });
     }
 
-    await deleteAppointment(session.user.email, params.id);
+    await deleteAppointment(session.user.email, id);
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
