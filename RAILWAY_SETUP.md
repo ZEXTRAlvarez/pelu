@@ -61,17 +61,39 @@ Ejecuta este comando para generar un secret seguro:
 openssl rand -base64 32
 ```
 
-### 4. Ejecutar Migraciones
+### 4. Configurar la Base de Datos
 
-Después de configurar las variables, ejecuta las migraciones en Railway:
+**IMPORTANTE:** Después de configurar las variables, debes ejecutar las migraciones para crear las tablas.
 
+#### Opción A: Usando el script automático (Recomendado)
 ```bash
+railway run npm run setup-db
+```
+
+#### Opción B: Manualmente
+```bash
+# Generar cliente de Prisma
+railway run npx prisma generate --schema=./prisma/schema.production.prisma
+
+# Ejecutar migraciones
 railway run npx prisma migrate deploy --schema=./prisma/schema.production.prisma
 ```
 
-O desde el dashboard de Railway:
+#### Opción C: Desde el dashboard de Railway
 1. Ve a la pestaña "Deployments"
 2. Haz clic en "Deploy" para que se ejecuten las migraciones automáticamente
+
+### 5. Verificar la Configuración
+
+Para verificar que todo está configurado correctamente:
+
+```bash
+# Verificar variables de entorno
+railway run npm run check-env
+
+# Verificar base de datos
+railway run npm run check-db
+```
 
 ## Verificación
 
@@ -83,6 +105,20 @@ Para verificar que todo está configurado correctamente:
 
 ## Solución de Problemas
 
+### Error "The table `public.User` does not exist"
+
+Este error indica que las migraciones no se han ejecutado. Solución:
+
+1. **Verifica que `DATABASE_URL` sea una URL de PostgreSQL**, no SQLite
+2. **Ejecuta las migraciones**:
+   ```bash
+   railway run npm run setup-db
+   ```
+3. **Verifica que las tablas se crearon**:
+   ```bash
+   railway run npm run check-db
+   ```
+
 ### Error de Base de Datos SQLite
 
 Si ves el error "the URL must start with the protocol `file:`":
@@ -91,7 +127,7 @@ Si ves el error "the URL must start with the protocol `file:`":
 2. **Asegúrate de que la URL comience con `postgresql://`**
 3. **Ejecuta las migraciones de PostgreSQL**:
    ```bash
-   railway run npx prisma migrate deploy --schema=./prisma/schema.production.prisma
+   railway run npm run setup-db
    ```
 
 ### Error 500 en Autenticación
@@ -108,7 +144,7 @@ Si sigues teniendo error 500:
 Si hay problemas con las migraciones:
 
 1. Verifica que `DATABASE_URL` sea correcta
-2. Ejecuta `railway run npx prisma migrate deploy --schema=./prisma/schema.production.prisma`
+2. Ejecuta `railway run npm run setup-db`
 3. Verifica que la base de datos esté activa
 
 ## Comandos Útiles
@@ -116,6 +152,15 @@ Si hay problemas con las migraciones:
 Para ejecutar comandos en Railway:
 
 ```bash
+# Configurar base de datos completa
+railway run npm run setup-db
+
+# Verificar base de datos
+railway run npm run check-db
+
+# Verificar variables de entorno
+railway run npm run check-env
+
 # Ejecutar migraciones de PostgreSQL
 railway run npx prisma migrate deploy --schema=./prisma/schema.production.prisma
 

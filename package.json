@@ -8,9 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate --schema=./prisma/schema.production.prisma",
+    "postbuild": "npm run setup-db",
     "prisma:seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
     "cleanup-appointments": "node scripts/cleanup-appointments.js",
     "check-env": "node scripts/check-env.js",
+    "check-db": "node scripts/check-db.js",
+    "setup-db": "node scripts/setup-db.js",
     "db:push": "prisma db push --schema=./prisma/schema.production.prisma",
     "db:migrate": "prisma migrate deploy --schema=./prisma/schema.production.prisma",
     "db:generate": "prisma generate --schema=./prisma/schema.production.prisma"
